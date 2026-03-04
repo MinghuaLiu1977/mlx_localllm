@@ -14,7 +14,10 @@ A high-performance local LLM plugin for macOS using Apple's MLX framework. Suppo
   s.author           = { 'EastlakeStudio' => 'support@eastlakestudio.com' }
 
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'mlx_localllm/Classes/**/*'
+  s.resource_bundles = {
+    'mlx_localllm_privacy' => ['mlx_localllm/Resources/PrivacyInfo.xcprivacy']
+  }
 
   s.dependency 'FlutterMacOS'
 

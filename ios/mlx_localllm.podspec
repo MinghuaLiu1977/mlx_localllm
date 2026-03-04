@@ -14,7 +14,10 @@ A high-performance local LLM plugin for iOS using Apple's MLX framework. Support
   s.author           = { 'MinghuaLiu' => 'support@eastlakestudio.com' }
 
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'mlx_localllm/Classes/**/*'
+  s.resource_bundles = {
+    'mlx_localllm_privacy' => ['mlx_localllm/Resources/PrivacyInfo.xcprivacy']
+  }
   s.dependency 'Flutter'
   s.platform = :ios, '17.0'
 

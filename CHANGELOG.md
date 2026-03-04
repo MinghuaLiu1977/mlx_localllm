@@ -1,3 +1,8 @@
+# 0.2.4
+
+* **Fixed SPM Detection**: Restructured native directories to `ios/mlx_localllm/` and `macos/mlx_localllm/` as required by `pub.dev` score analyzer (`pana`). This ensures full native Swift Package Manager support is correctly recognized.
+* **Code Formatting**: Fixed Dart code formatting issues to satisfy `pub.dev` quality checks.
+
 # 0.2.3
 
 * **Fixed Documentation**: Fixed an issue where the mockup image link was using an insecure local path. Now using a relative path compatible with pub.dev.

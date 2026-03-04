@@ -1,3 +1,8 @@
+# 0.2.4
+
+* **修复 SPM 检测问题**: 将原生目录结构调整为 `ios/mlx_localllm/` 和 `macos/mlx_localllm/`，以符合 `pub.dev` 评分分析器 (`pana`) 的要求。这确保了原生 Swift Package Manager 支持能被正确识别。
+* **代码格式化**: 修复了 Dart 代码格式问题，以满足 `pub.dev` 的质量检查。
+
 # 0.2.3
 
 * **修复文档问题**: 修复了 README 中图片链接使用本地路径的问题。现在使用符合 pub.dev 要求的相对路径。

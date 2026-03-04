@@ -1,3 +1,10 @@
+# 0.2.0
+
+* **Added iOS support** (iPhone, iPad).
+* Unified Swift codebase for iOS and macOS.
+* Set iOS deployment target to 17.0.
+* Updated example project with iOS project structure.
+
 # 0.1.0
 
 * Initial release.

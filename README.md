@@ -16,8 +16,9 @@ A Flutter plugin for high-performance localized LLM inference on macOS using App
 - 🛠️ **Easy Integration**: Comprehensive API for model management and inference.
 
 ### Requirements
+- **iOS**: 17.0 or higher.
 - **macOS**: 14.0 or higher.
-- **Hardware**: Apple Silicon (M1, M2, M3, etc.).
+- **Hardware**: Apple Silicon (M1, M2, M3, iPhone 12+, etc.).
 - **Flutter**: 3.0.0 or higher.
 
 ### Installation
@@ -27,14 +28,21 @@ A Flutter plugin for high-performance localized LLM inference on macOS using App
    flutter pub add mlx_localllm
    ```
 
-2. **CRITICAL STEP**: Since this plugin relies on Swift Package Manager (SPM) for MLX, you must run the configuration script in your `macos` directory:
+2. **CRITICAL STEP**: Since this plugin relies on Swift Package Manager (SPM) for MLX, you must configure your project:
+
+   #### For macOS
    ```bash
-   # Navigate to your project's macos directory
    cd macos
-   # Run the setup script provided by the plugin
    ruby ../path/to/mlx_localllm/scripts/setup_example_macos.rb
    ```
-   *(Note: For production apps, you may need to manually add the SPM dependencies `MLX`, `MLXLLM`, `Hub`, and `Tokenizers` to your Runner target in Xcode if you don't use the script).*
+
+   #### For iOS
+   Due to the current limitations of CocoaPods and SPM integration in Flutter, you need to manually add the dependency:
+   1. Open `ios/Runner.xcworkspace` in Xcode.
+   2. Go to **Project Settings** -> **Package Dependencies**.
+   3. Add `https://github.com/ml-explore/mlx-swift-llm`.
+   4. Ensure the **Runner** Target includes the library in **Frameworks, Libraries, and Embedded Content**.
+   5. **Real Device Required**: MLX does not support the iOS Simulator (Metal GPU requirement).
 
 ### Usage
 
@@ -72,8 +80,9 @@ print(response);
 - 🛠️ **全功能 API**: 提供完整的模型下载、删除、状态检查库及推理引擎。
 
 ### 系统要求
+- **iOS**: 17.0 及以上。
 - **系统**: macOS 14.0 及以上。
-- **硬件**: Apple Silicon 系列芯片 (M1, M2, M3 等)。
+- **硬件**: Apple Silicon 系列芯片 (M1, M2, iPhne 15 Pro 等)。
 - **Flutter**: 3.0.0 及以上。
 
 ### 安装指南
@@ -83,12 +92,20 @@ print(response);
    flutter pub add mlx_localllm
    ```
 
-2. **关键步骤**: 该插件通过 Swift Package Manager (SPM) 引用 MLX，由于 CocoaPods 与 SPM 的集成限制，您需要在项目的 `macos` 目录运行配置脚本：
+2. **关键步骤**: 该插件通过 Swift Package Manager (SPM) 引用 MLX，由于 CocoaPods 与 SPM 的集成限制，您需要进行以下配置：
+
+   #### macOS 配置
    ```bash
    cd macos
-   # 运行插件自带的配置脚本（指向实际插件路径）
    ruby path/to/mlx_localllm/scripts/setup_example_macos.rb
    ```
+
+   #### iOS 配置
+   需手动在 Xcode 中关联依赖：
+   1. 使用 Xcode 打开 `ios/Runner.xcworkspace`。
+   2. 在 **Project Settings** -> **Package Dependencies** 中添加包：`https://github.com/ml-explore/mlx-swift-llm`。
+   3. 确保 **Runner** Target 的 **Frameworks, Libraries, and Embedded Content** 已包含该库。
+   4. **必须使用真机**: iOS 模拟器由于不支持 Metal GPU 扩展，无法运行 MLX。
 
 ### 快速开始
 

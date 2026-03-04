@@ -43,8 +43,8 @@ flutter:
       ios:
         pluginClass: MlxLocalllmPlugin
     spm_dependencies:
-      - name: mlx-swift-llm
-        url: https://github.com/ml-explore/mlx-swift-llm
+      - name: mlx-swift-lm
+        url: https://github.com/ml-explore/mlx-swift-lm
         version:
           branch: main
 

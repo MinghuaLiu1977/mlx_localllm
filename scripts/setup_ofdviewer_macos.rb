@@ -4,7 +4,7 @@ project_path = '/Users/minghualiu/personal/EastlakeStudio/ofdviewer/flutter_app/
 project = Xcodeproj::Project.open(project_path)
 
 # SPM Package Repository
-package_url = 'https://github.com/ml-explore/mlx-swift-llm.git'
+package_url = 'https://github.com/ml-explore/mlx-swift-lm.git'
 package_requirement = {
     'kind' => 'branch',
     'branch' => 'main'

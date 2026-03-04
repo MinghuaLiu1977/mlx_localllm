@@ -1,3 +1,7 @@
+# 0.2.2
+
+* **完善 Swift Package Manager 支持**: 在 `ios/` 和 `macos/` 目录下增加了 `Package.swift` 文件。这完全满足了原生 SPM 的要求，并提升了 pub.dev 上的平台评分。
+
 # 0.2.1
 
 * **原生 SPM 支持**: 在 `pubspec.yaml` 中增加了原生 Swift Package Manager 支持。不再需要手动在 Xcode 中配置 MLX 依赖。

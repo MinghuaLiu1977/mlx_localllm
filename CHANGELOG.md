@@ -1,3 +1,7 @@
+# 0.2.2
+
+* **Full Swift Package Manager Support**: Added `Package.swift` to both `ios/` and `macos/` directories. This fully satisfies native SPM requirements and improves the platform score on pub.dev.
+
 # 0.2.1
 
 * **Native SPM support**: Added native Swift Package Manager support in `pubspec.yaml`. No manual Xcode configuration required for MLX dependencies.

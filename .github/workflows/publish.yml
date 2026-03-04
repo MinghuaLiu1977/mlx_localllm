@@ -1,0 +1,60 @@
+name: Publish to pub.dev
+
+on:
+  push:
+    branches: [ master, main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze project
+        run: dart analyze --fatal-infos
+
+      - name: Run tests
+        run: dart test
+
+  pana:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Install pana
+        run: dart pub global activate pana
+
+      - name: Run pana and check score
+        run: |
+          REPORT=$(pana . --no-hosting-service --json)
+          SCORE=$(echo $REPORT | jq '.scores.grantedPoints')
+          MAX_SCORE=$(echo $REPORT | jq '.scores.maxPoints')
+          echo "Pana Score: $SCORE/$MAX_SCORE"
+          if [ "$SCORE" -lt "$MAX_SCORE" ]; then
+            echo "Error: Pana score $SCORE is less than max score $MAX_SCORE"
+            exit 1
+          fi
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, pana]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for OIDC authentication
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - name: Publish to pub.dev
+        run: dart pub publish --force

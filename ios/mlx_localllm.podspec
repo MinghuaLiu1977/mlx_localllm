@@ -5,23 +5,23 @@
 Pod::Spec.new do |s|
   s.name             = 'mlx_localllm'
   s.version          = '0.2.9'
-  s.summary          = 'A high-performance local LLM plugin for macOS using Apple MLX.'
+  s.summary          = 'A high-performance local LLM plugin for iOS using Apple MLX.'
   s.description      = <<-DESC
-A high-performance local LLM plugin for macOS using Apple's MLX framework. Supports model downloading and inference.
+A high-performance local LLM plugin for iOS using Apple's MLX framework. Supports model downloading and inference.
                        DESC
   s.homepage         = 'https://github.com/EastlakeStudio/mlx_localllm'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'EastlakeStudio' => 'support@eastlakestudio.com' }
 
   s.source           = { :path => '.' }
-  s.source_files = 'mlx_localllm/Classes/**/*'
+  s.source_files = '../macos/mlx_localllm/Classes/**/*'
   s.resource_bundles = {
-    'mlx_localllm_privacy' => ['mlx_localllm/Resources/PrivacyInfo.xcprivacy']
+    'mlx_localllm_privacy' => ['../macos/mlx_localllm/Resources/PrivacyInfo.xcprivacy']
   }
 
-  s.dependency 'FlutterMacOS'
+  s.dependency 'Flutter'
 
-  s.platform = :osx, '14.0'
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
+  s.platform = :ios, '17.0'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.9'
 end

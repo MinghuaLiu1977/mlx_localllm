@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mlx_localllm/mlx_localllm.dart';
 import 'package:mlx_localllm/src/model_manager.dart';
 import 'package:mlx_localllm/src/inference_engine.dart';
+import 'package:mlx_localllm/src/download_progress.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -21,8 +21,8 @@ A Flutter plugin for high-performance localized LLM inference on macOS using App
 
 | Platform | Support | Architecture | Min OS |
 | :--- | :---: | :--- | :--- |
-| **macOS** | ✅ | Apple Silicon (ARM64) | 14.0+ |
-| **iOS** | ❌ | - | - |
+| **macOS** | ✅ | Apple Silicon (ARM64) / Intel (x86_64 Mock) | 14.0+ |
+| **iOS** | ✅ | ARM64 | 17.0+ |
 | **Android** | ❌ | - | - |
 | **Windows** | ❌ | - | - |
 | **Linux** | ❌ | - | - |
@@ -30,7 +30,8 @@ A Flutter plugin for high-performance localized LLM inference on macOS using App
 
 ### Requirements
 - **macOS**: 14.0 or higher.
-- **Hardware**: Apple Silicon (M1, M2, M3, etc.).
+- **iOS**: 17.0 or higher.
+- **Hardware**: Apple Silicon (M1, M2, M3, etc.) for inference.
 - **Flutter**: 3.0.0 or higher.
 
 ### Installation
@@ -42,28 +43,34 @@ A Flutter plugin for high-performance localized LLM inference on macOS using App
 
 2. **Platform Setup**:
    The plugin uses **Swift Package Manager (SPM)** natively (requires Flutter 3.24+).
-   - **macOS**: Dependencies are automatically resolved by the Flutter toolchain. No manual Xcode configuration is typically required.
-   - **Architecture**: This plugin only supports **Apple Silicon (ARM64)**. Intel-based Macs are not supported.
+   - **macOS/iOS**: Dependencies are automatically resolved by the Flutter toolchain.
+   - **Architecture**:
+     - **Apple Silicon (ARM64)**: Fully supported with native MLX acceleration.
+     - **Intel (x86_64)**: Supported via **Mocking**. You can compile and link on Intel Macs, but inference calls will return an "Unsupported architecture" error. This allows for seamless development across different Mac architectures.
 
 ### Usage
 
 #### Check Support
 ```dart
-bool supported = await MlxLocalllm.isSupported();
+bool supported = await MlxLocalllm().isSupported();
 ```
 
 #### Download Model
 ```dart
-MlxLocalllm.modelManager.downloadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit')
-  .listen((progress) {
-    print('Download progress: ${progress.progress * 100}%');
-  });
+// Track progress via modelEvents stream
+MlxLocalllm().modelEvents.listen((event) {
+  if (event['type'] == 'downloadProgress') {
+    print('Download progress: ${event['value'] * 100}%');
+  }
+});
+
+await MlxLocalllm().downloadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
 ```
 
 #### Run Inference
 ```dart
-await MlxLocalllm.inferenceEngine.loadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
-String response = await MlxLocalllm.inferenceEngine.generate('Hello, who are you?');
+await MlxLocalllm().loadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
+String response = await MlxLocalllm().generate(prompt: 'Hello, who are you?');
 print(response);
 ```
 
@@ -72,28 +79,30 @@ print(response);
 <a name="简体中文"></a>
 ## 简体中文
 
-基于 Apple **MLX** 框架的 macOS 高性能本地大模型推理 Flutter 插件。通过将模型直接加载到应用进程中，提供零延迟的交互体验。
+基于 Apple **MLX** 框架的 macOS/iOS 高性能本地大模型推理 Flutter 插件。通过将模型直接加载到应用进程中，提供零延迟的交互体验。
 
 ### 特性
 - 🚀 **原生加速**: 基于 Apple MLX 针对 Apple Silicon 芯片深度优化。
 - 📦 **进程内推理**: 无需安装 Ollama 等外部服务，零延迟通信。
 - 🌐 **鲁棒下载器**: 内置分块下载机制，支持 Hugging Face 及其镜像站。
-- 🛠️ **全栈能力**: 提供从模型搜索、下载、管理到推断的完整链路。
+- 🛠️ **多平台支持**: 同时支持 macOS 和 iOS 平台。
+- 💻 **架构兼容**: 支持 x86 架构 Mock 编译，确保 Intel Mac 开发者也能正常运行项目。
 
 ### 平台支持
 
 | 平台 | 支持 | 架构 | 最低系统版本 |
 | :--- | :---: | :--- | :--- |
-| **macOS** | ✅ | Apple Silicon (ARM64) | 14.0+ |
-| **iOS** | ❌ | - | - |
+| **macOS** | ✅ | Apple Silicon (ARM64) / Intel (x86_64 Mock) | 14.0+ |
+| **iOS** | ✅ | ARM64 | 17.0+ |
 | **Android** | ❌ | - | - |
 | **Windows** | ❌ | - | - |
 | **Linux** | ❌ | - | - |
 | **Web** | ❌ | - | - |
 
 ### 系统要求
-- **系统**: macOS 14.0 及以上。
-- **硬件**: Apple Silicon 系列芯片 (M1, M2, M3 等)。
+- **macOS**: 14.0 及以上。
+- **iOS**: 17.0 及以上。
+- **硬件**: Apple Silicon 系列芯片 (M1, M2, M3 等) 仅在这些芯片上支持推理。
 - **Flutter**: 3.0.0 及以上。
 
 ### 安装指南
@@ -104,28 +113,34 @@ print(response);
    ```
 
 2. **平台配置**:
-   - **macOS**: 插件使用 Swift Package Manager (SPM) 管理 MLX 依赖。Flutter (3.24+) 会自动处理这些依赖。
-   - **架构要求**: 本插件仅支持 **Apple Silicon (ARM64)**。不支持 Intel 架构的 Mac。
+   - **macOS/iOS**: 插件使用 Swift Package Manager (SPM) 管理 MLX 依赖。Flutter (3.24+) 会自动处理这些依赖。
+   - **架构要求**: 
+     - **Apple Silicon (ARM64)**: 原生支持，具备 MLX 加速。
+     - **Intel (x86_64)**: 支持 **Mock 编译**。您可以在 Intel Mac 上正常编译和链接项目，但推理调用将返回“不支持的架构”错误。这极大地方便了跨架构的协同开发。
 
 ### 快速开始
 
 #### 硬件支持检测
 ```dart
-bool supported = await MlxLocalllm.isSupported();
+bool supported = await MlxLocalllm().isSupported();
 ```
 
 #### 模型下载
 ```dart
-MlxLocalllm.modelManager.downloadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit')
-  .listen((progress) {
-    print('下载进度: ${progress.progress * 100}%');
-  });
+// 通过 modelEvents 流监听进度
+MlxLocalllm().modelEvents.listen((event) {
+  if (event['type'] == 'downloadProgress') {
+    print('下载进度: ${event['value'] * 100}%');
+  }
+});
+
+await MlxLocalllm().downloadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
 ```
 
 #### 执行推理
 ```dart
-await MlxLocalllm.inferenceEngine.loadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
-String response = await MlxLocalllm.inferenceEngine.generate('你好，请做下自我介绍');
+await MlxLocalllm().loadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
+String response = await MlxLocalllm().generate(prompt: '你好，请做下自我介绍');
 print(response);
 ```
 

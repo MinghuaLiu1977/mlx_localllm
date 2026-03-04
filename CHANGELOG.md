@@ -1,3 +1,10 @@
+# 0.2.9
+
+* **iOS Support**: Added full support for iOS (iPhone/iPad) using Apple's MLX framework.
+* **x86 Architecture Support (Mocking)**: Added conditional compilation to support x86 (Intel Mac) builds. Inference is mocked to return "Unsupported architecture" while allowing the project to compile and link.
+* **Refactored Native Code**: Unified Swift code for both iOS and macOS through shared source files.
+* **Improved Pub.dev Score**: Fixed lint errors in tests and updated example project structure.
+
 # 0.2.8
 
 * **Fixed Native Errors**: Fixed `NativeMLXService` missing members (`unloadModel`, `checkModelExists`, `deleteModel`).

@@ -4,16 +4,20 @@ import FlutterMacOS
 import Flutter
 #endif
 import Foundation
+#if arch(arm64)
 import MLX
 import MLXLLM
 import MLXLMCommon
 import Tokenizers
+#endif
 import Hub
 
 @available(macOS 14.0, *)
 public actor NativeMLXService {
     
+    #if arch(arm64)
     private var container: ModelContainer?
+    #endif
     private var downloadTasks: [String: Task<Void, Never>] = [:]
     private var activeHubs: [String: HubApi] = [:]
     
@@ -34,6 +38,10 @@ public actor NativeMLXService {
                                 onComplete: @Sendable @escaping (String) -> Void,
                                 onError: @Sendable @escaping (String) -> Void) {
         
+        #if !arch(arm64)
+        onError("Unsupported architecture: MLX requires Apple Silicon (arm64)")
+        return
+        #else
         if downloadTasks[repoId] != nil {
             return
         }
@@ -151,6 +159,7 @@ public actor NativeMLXService {
         }
         
         downloadTasks[repoId] = task
+        #endif
     }
     
     private func removeInternalResources(repoId: String) {
@@ -163,7 +172,9 @@ public actor NativeMLXService {
         downloadTasks.removeValue(forKey: repoId)
     }
     public func unloadModel() {
+        #if arch(arm64)
         self.container = nil
+        #endif
     }
 
     public func checkModelExists(repoId: String) -> Bool {
@@ -180,6 +191,9 @@ public actor NativeMLXService {
     }
 
     public func loadModel(path: String) async throws -> Bool {
+        #if !arch(arm64)
+        throw NSError(domain: "NativeMLXService", code: 403, userInfo: [NSLocalizedDescriptionKey: "Unsupported architecture: MLX requires Apple Silicon (arm64)"])
+        #else
         // Resolve path: if it's not absolute, treat it as a repoId relative to models directory
         let modelURL: URL
         if path.hasPrefix("/") {
@@ -195,9 +209,13 @@ public actor NativeMLXService {
         } catch {
             throw error
         }
+        #endif
     }
     
     public func generate(prompt: String, temperature: Float = 0.0, stopSequences: [String] = []) async throws -> String {
+        #if !arch(arm64)
+        throw NSError(domain: "NativeMLXService", code: 403, userInfo: [NSLocalizedDescriptionKey: "Unsupported architecture: MLX requires Apple Silicon (arm64)"])
+        #else
         guard let container = self.container else {
             throw NSError(domain: "NativeMLXService", code: 404, userInfo: [NSLocalizedDescriptionKey: "Model not loaded"])
         }
@@ -235,5 +253,6 @@ public actor NativeMLXService {
         }
         
         return cleanText
+        #endif
     }
 }

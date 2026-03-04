@@ -1,3 +1,23 @@
+# 0.2.9
+
+* **iOS 支持**: 增加对 iOS 平台（iPhone/iPad）的完整支持，基于 Apple MLX 框架。
+* **x86 架构支持 (Mock)**: 通过条件编译支持 x86 (Intel Mac) 架构编译。在 x86 环境下推理功能将返回“不支持的架构”错误，但允许项目正常编译与链接。
+* **重构原生代码**: 通过共享源码文件统一了 iOS 和 macOS 的 Swift 实现。
+* **提升 Pub.dev 评分**: 修复了测试中的 Lint 错误并更新了 example 项目结构。
+
+# 0.2.8
+
+* **修复原生错误**: 修复了 `NativeMLXService` 缺失的成员方法（`unloadModel`, `checkModelExists`, `deleteModel`）。
+* **同步 API 名称**: 统一了 Dart 与 Swift 之间的 `MethodChannel` 及其方法名称。
+* **稳定示例项目**: 验证了示例项目在 macOS ARM (SPM) 环境下的编译成功。
+
+# 0.2.7
+
+* **聚焦 macOS ARM**: 专门针对 Apple Silicon macOS 进行了优化和稳定。
+* **全量 API 实现**: 完成了 `loadModel`, `unloadModel`, `generate`, `downloadModel` (带进度流), `checkModelExists`, 以及 `deleteModel`。
+* **状态管理**: 改进了模型生命周期管理，支持自动缓存与引用追踪。
+* **EventChannel 支持**: 增加了健壮的事件流，用于模型下载与加载过程中的实时进度与状态报告。
+
 # 0.2.6
 
 * **修复 SPM 仓库 URL**: 修正了 `mlx-swift-lm` 的 Swift Package Manager 仓库地址。

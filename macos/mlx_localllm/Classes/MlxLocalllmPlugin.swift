@@ -54,7 +54,7 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
             }
             #endif
             #else
-            result(false)
+            result(false) // Intel Macs / x86 simulators are not supported for inference
             #endif
         case "loadModel":
             #if arch(arm64)

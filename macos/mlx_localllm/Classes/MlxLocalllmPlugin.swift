@@ -16,7 +16,7 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
         #elseif os(iOS)
         let messenger = registrar.messenger()
         #endif
-        let channel = FlutterMethodChannel(name: "com.eastlakestudio.mlx_localllm", binaryMessenger: messenger)
+        let channel = FlutterMethodChannel(name: "mlx_localllm", binaryMessenger: messenger)
         let instance = MlxLocalllmPlugin()
         instance.channel = channel
         registrar.addMethodCallDelegate(instance, channel: channel)
@@ -142,7 +142,36 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
             #else
             result(FlutterError(code: "UNSUPPORTED_ARCH", message: "Apple Silicon required", details: nil))
             #endif
-        case "inference":
+        case "unloadModel":
+            Task {
+                await self.mlxService?.unloadModel()
+                result(true)
+            }
+        case "checkModelExists":
+            guard let args = call.arguments as? [String: Any],
+                  let repoId = args["repoId"] as? String else {
+                result(FlutterError(code: "INVALID_ARGUMENTS", message: "Missing repoId", details: nil))
+                return
+            }
+            Task {
+                let exists = await self.mlxService?.checkModelExists(repoId: repoId) ?? false
+                result(exists)
+            }
+        case "deleteModel":
+            guard let args = call.arguments as? [String: Any],
+                  let repoId = args["repoId"] as? String else {
+                result(FlutterError(code: "INVALID_ARGUMENTS", message: "Missing repoId", details: nil))
+                return
+            }
+            Task {
+                do {
+                    try await self.mlxService?.deleteModel(repoId: repoId)
+                    result(true)
+                } catch {
+                    result(FlutterError(code: "DELETE_FAILED", message: error.localizedDescription, details: nil))
+                }
+            }
+        case "generate":
             #if arch(arm64)
             guard let args = call.arguments as? [String: Any],
                   let prompt = args["prompt"] as? String else {

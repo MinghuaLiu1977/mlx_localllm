@@ -162,11 +162,34 @@ public actor NativeMLXService {
         downloadTasks[repoId]?.cancel()
         downloadTasks.removeValue(forKey: repoId)
     }
+    public func unloadModel() {
+        self.container = nil
+    }
+
+    public func checkModelExists(repoId: String) -> Bool {
+        let repoDir = getModelDirectory().appendingPathComponent(repoId)
+        var isDir: ObjCBool = false
+        return FileManager.default.fileExists(atPath: repoDir.path, isDirectory: &isDir) && isDir.boolValue
+    }
+
+    public func deleteModel(repoId: String) throws {
+        let repoDir = getModelDirectory().appendingPathComponent(repoId)
+        if FileManager.default.fileExists(atPath: repoDir.path) {
+            try FileManager.default.removeItem(at: repoDir)
+        }
+    }
 
     public func loadModel(path: String) async throws -> Bool {
-        let url = URL(fileURLWithPath: path)
+        // Resolve path: if it's not absolute, treat it as a repoId relative to models directory
+        let modelURL: URL
+        if path.hasPrefix("/") {
+            modelURL = URL(fileURLWithPath: path)
+        } else {
+            modelURL = getModelDirectory().appendingPathComponent(path)
+        }
+
         do {
-            let configuration = ModelConfiguration(directory: url)
+            let configuration = ModelConfiguration(directory: modelURL)
             self.container = try await LLMModelFactory.shared.loadContainer(configuration: configuration)
             return true
         } catch {

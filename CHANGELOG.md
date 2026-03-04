@@ -1,3 +1,16 @@
+# 0.2.8
+
+* **Fixed Native Errors**: Fixed `NativeMLXService` missing members (`unloadModel`, `checkModelExists`, `deleteModel`).
+* **Synced API Names**: Unified `MethodChannel` and method names between Dart and Swift.
+* **Stable Example**: Verified that the example build succeeds on macOS ARM with SPM.
+
+# 0.2.7
+
+* **macOS ARM Focus**: Optimized and stabilized specifically for Apple Silicon macOS. **Dropped experimental iOS support** to ensure maximum performance and reliability on desktop.
+* **Full API Implementation**: Finalized `loadModel`, `unloadModel`, `generate`, `downloadModel` (with progress stream), `checkModelExists`, and `deleteModel`.
+* **State Management**: Improved model lifecycle management with automatic caching and reference tracking.
+* **EventChannel Support**: Added robust event stream for real-time progress and status reporting during model downloads and loading operations.
+
 # 0.2.6
 
 * **Fixed SPM Repository URL**: Corrected the Swift Package Manager repository URL for `mlx-swift-lm`.

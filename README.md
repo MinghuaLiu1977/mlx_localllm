@@ -21,17 +21,16 @@ A Flutter plugin for high-performance localized LLM inference on macOS using App
 
 | Platform | Support | Architecture | Min OS |
 | :--- | :---: | :--- | :--- |
-| **iOS** | ✅ | Apple Silicon (ARM64) | 17.0+ |
 | **macOS** | ✅ | Apple Silicon (ARM64) | 14.0+ |
+| **iOS** | ❌ | - | - |
 | **Android** | ❌ | - | - |
 | **Windows** | ❌ | - | - |
 | **Linux** | ❌ | - | - |
 | **Web** | ❌ | - | - |
 
 ### Requirements
-- **iOS**: 17.0 or higher.
 - **macOS**: 14.0 or higher.
-- **Hardware**: Apple Silicon (M1, M2, M3, iPhone 12+, etc.).
+- **Hardware**: Apple Silicon (M1, M2, M3, etc.).
 - **Flutter**: 3.0.0 or higher.
 
 ### Installation
@@ -43,8 +42,8 @@ A Flutter plugin for high-performance localized LLM inference on macOS using App
 
 2. **Platform Setup**:
    The plugin uses **Swift Package Manager (SPM)** natively (requires Flutter 3.24+).
-   - **macOS/iOS**: Dependencies are automatically resolved by the Flutter toolchain. No manual Xcode configuration is typically required.
-   - **Real Device Required**: Inference requires Metal GPU acceleration. It **will not run on simulators**.
+   - **macOS**: Dependencies are automatically resolved by the Flutter toolchain. No manual Xcode configuration is typically required.
+   - **Architecture**: This plugin only supports **Apple Silicon (ARM64)**. Intel-based Macs are not supported.
 
 ### Usage
 
@@ -85,17 +84,16 @@ print(response);
 
 | 平台 | 支持 | 架构 | 最低系统版本 |
 | :--- | :---: | :--- | :--- |
-| **iOS** | ✅ | Apple Silicon (ARM64) | 17.0+ |
 | **macOS** | ✅ | Apple Silicon (ARM64) | 14.0+ |
+| **iOS** | ❌ | - | - |
 | **Android** | ❌ | - | - |
 | **Windows** | ❌ | - | - |
 | **Linux** | ❌ | - | - |
 | **Web** | ❌ | - | - |
 
 ### 系统要求
-- **iOS**: 17.0 及以上。
 - **系统**: macOS 14.0 及以上。
-- **硬件**: Apple Silicon 系列芯片 (M1, M2, iPhne 15 Pro 等)。
+- **硬件**: Apple Silicon 系列芯片 (M1, M2, M3 等)。
 - **Flutter**: 3.0.0 及以上。
 
 ### 安装指南
@@ -106,8 +104,8 @@ print(response);
    ```
 
 2. **平台配置**:
-   - **macOS/iOS**: 插件使用 Swift Package Manager (SPM) 管理 MLX 依赖。Flutter (3.24+) 会自动处理这些依赖。
-   - **必须使用真机**: MLX 需要 Metal GPU 加持，推理功能仅在物理设备（M1、M2、iPhone 12+ 等）上运行，不支持模拟器。
+   - **macOS**: 插件使用 Swift Package Manager (SPM) 管理 MLX 依赖。Flutter (3.24+) 会自动处理这些依赖。
+   - **架构要求**: 本插件仅支持 **Apple Silicon (ARM64)**。不支持 Intel 架构的 Mac。
 
 ### 快速开始
 

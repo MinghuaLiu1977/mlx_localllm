@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mlx_localllm/mlx_localllm.dart';
+import 'dart:async';
 
 void main() {
   runApp(const MaterialApp(home: ExampleApp()));
@@ -24,73 +25,121 @@ class _ExampleAppState extends State<ExampleApp> {
   double _progress = 0;
   String _response = '';
   bool _isSupported = false;
+  StreamSubscription? _eventSubscription;
 
   @override
   void initState() {
     super.initState();
     _checkSupport();
+    _setupEventListener();
+  }
+
+  @override
+  void dispose() {
+    _eventSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _setupEventListener() {
+    _eventSubscription = MlxLocalllm().modelEvents.listen((event) {
+      final type = event['type'];
+      final value = (event['value'] as num).toDouble();
+
+      setState(() {
+        _progress = value;
+        if (type == 'downloadProgress') {
+          _status = 'Downloading...';
+        } else if (type == 'loadProgress') {
+          _status = 'Loading...';
+        }
+      });
+    });
   }
 
   Future<void> _checkSupport() async {
-    final supported = await MlxLocalllm.isSupported();
+    final supported = await MlxLocalllm().isSupported();
     setState(() => _isSupported = supported);
   }
 
-  void _download() {
+  Future<void> _downloadModel() async {
     final repoId = _repoController.text.trim();
-    if (repoId.isEmpty) return;
-
     setState(() {
-      _status = 'Downloading...';
+      _status = 'Connecting to HuggingFace...';
       _progress = 0;
     });
 
-    MlxLocalllm.modelManager
-        .downloadModel(repoId)
-        .listen(
-          (p) {
-            setState(() {
-              _progress = p.progress;
-              if (p.isDone) _status = 'Downloaded';
-            });
-          },
-          onError: (e) {
-            setState(() => _status = 'Error: $e');
-          },
-        );
+    try {
+      final success = await MlxLocalllm().downloadModel(repoId);
+      setState(() {
+        _status = success ? 'Download Complete' : 'Download Failed';
+        _progress = 1.0;
+      });
+    } catch (e) {
+      setState(() => _status = 'Error: $e');
+    }
   }
 
-  void _cancelDownload() {
-    final repoId = _repoController.text.trim();
-    MlxLocalllm.modelManager.cancelDownload(repoId);
-    setState(() => _status = 'Download cancelled');
-  }
-
-  Future<void> _delete() async {
+  Future<void> _deleteModel() async {
     final repoId = _repoController.text.trim();
     try {
-      await MlxLocalllm.modelManager.deleteModel(repoId);
-      setState(() => _status = 'Deleted');
+      final success = await MlxLocalllm().deleteModel(repoId);
+      setState(() {
+        _status = success ? 'Model Deleted' : 'Delete Failed';
+        _progress = 0;
+      });
     } catch (e) {
-      setState(() => _status = 'Error deleting: ${e.toString()}');
+      setState(() => _status = 'Error: $e');
+    }
+  }
+
+  Future<void> _checkModelExists() async {
+    final repoId = _repoController.text.trim();
+    try {
+      final exists = await MlxLocalllm().checkModelExists(repoId);
+      setState(() {
+        _status = exists ? 'Model Exists Locally' : 'Model Not Found';
+      });
+    } catch (e) {
+      setState(() => _status = 'Error: $e');
+    }
+  }
+
+  Future<void> _loadModel() async {
+    final repoId = _repoController.text.trim();
+    setState(() {
+      _status = 'Loading model...';
+      _progress = 0;
+    });
+
+    try {
+      final success = await MlxLocalllm().loadModel(repoId);
+      setState(() {
+        _status = success ? 'Model Loaded' : 'Load Failed';
+        _progress = 1.0;
+      });
+    } catch (e) {
+      setState(() => _status = 'Error: $e');
+    }
+  }
+
+  Future<void> _unloadModel() async {
+    try {
+      final success = await MlxLocalllm().unloadModel();
+      setState(() {
+        _status = success ? 'Model Unloaded' : 'Unload Failed';
+        _progress = 0;
+      });
+    } catch (e) {
+      setState(() => _status = 'Error: $e');
     }
   }
 
   Future<void> _generate() async {
-    final repoId = _repoController.text.trim();
     final prompt = _promptController.text.trim();
-
-    setState(() => _status = 'Loading model...');
+    setState(() => _status = 'Generating...');
 
     try {
-      final loaded = await MlxLocalllm.inferenceEngine.loadModel(repoId);
-      if (!loaded) {
-        setState(() => _status = 'Failed to load model');
-        return;
-      }
-
-      setState(() => _status = 'Generating...');
-      final result = await MlxLocalllm.inferenceEngine.generate(prompt);
+      final result = await MlxLocalllm().generate(prompt: prompt);
       setState(() {
         _response = result;
         _status = 'Done';
@@ -127,22 +176,28 @@ class _ExampleAppState extends State<ExampleApp> {
             Row(
               children: [
                 ElevatedButton(
-                  onPressed: _download,
+                  onPressed: _downloadModel,
                   child: const Text('Download'),
                 ),
                 const SizedBox(width: 8),
-                ElevatedButton(onPressed: _delete, child: const Text('Delete')),
+                ElevatedButton(
+                  onPressed: _deleteModel,
+                  child: const Text('Delete'),
+                ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: () async {
-                    final exists = await MlxLocalllm.modelManager.isDownloaded(
-                      _repoController.text.trim(),
-                    );
-                    setState(
-                      () => _status = exists ? 'Exists locally' : 'Not found',
-                    );
-                  },
+                  onPressed: _checkModelExists,
                   child: const Text('Check'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _loadModel,
+                  child: const Text('Load'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _unloadModel,
+                  child: const Text('Unload'),
                 ),
               ],
             ),
@@ -154,7 +209,12 @@ class _ExampleAppState extends State<ExampleApp> {
                 children: [
                   Text('${(_progress * 100).toStringAsFixed(1)}%'),
                   TextButton(
-                    onPressed: _cancelDownload,
+                    onPressed: () {
+                      setState(() {
+                        _progress = 0;
+                        _status = "Cancelled mockup progress";
+                      });
+                    },
                     child: const Text(
                       'Cancel',
                       style: TextStyle(color: Colors.red),

@@ -1,0 +1,16 @@
+# Exclude large binary build tools and artifacts
+build_xcframework/
+scripts/
+example/ios/
+macos/Frameworks/
+
+# Exclude internal git/github info
+.github/
+.antigravityignore
+
+# Exclude local build artifacts
+example/build/
+.build/
+.dart_tool/
+pubspec.lock
+example/pubspec.lock

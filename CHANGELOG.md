@@ -1,3 +1,8 @@
+# 0.2.6
+
+* **Fixed SPM Repository URL**: Corrected the Swift Package Manager repository URL for `mlx-swift-lm`.
+* **Synced Versions**: Synchronized version strings across `pubspec.yaml` and native `.podspec` files.
+
 # 0.2.5
 
 * **Fixed Dependency**: Corrected MLX dependency repository from `mlx-swift-llm` to `mlx-swift-lm`. This ensures the latest MLX core features are correctly integrated.

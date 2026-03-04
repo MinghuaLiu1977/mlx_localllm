@@ -1,3 +1,8 @@
+# 0.2.6
+
+* **修复 SPM 仓库 URL**: 修正了 `mlx-swift-lm` 的 Swift Package Manager 仓库地址。
+* **同步版本号**: 同步了 `pubspec.yaml` 与原生 `.podspec` 文件中的版本号。
+
 # 0.2.5
 
 * **修复依赖**: 将 MLX 依赖仓库从 `mlx-swift-llm` 修正为 `mlx-swift-lm`。这确保了 MLX 核心功能的正确集成。

@@ -1,0 +1,84 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks.json
+# for Visual Studio Code. This folder should be checked in.
+# .vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/GeneratedConfig.xcconfig
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/ephemeral/
+**/ios/Project.xcworkspace
+**/ios/.generated/
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/App.xcframework
+**/ios/Flutter/Flutter.xcframework
+**/macos/Flutter/ephemeral/
+**/macos/Pods/
+**/macos/.symlinks/
+**/android/app/src/main/java/io/flutter/plugins/
+**/android/local.properties
+**/android/Flutter/src/main/java/io/flutter/plugins/
+**/android/gen/
+**/android/out/
+**/android/.gradle/
+**/android/app/app.iml
+**/android/app/src/main/res/drawable-xhdpi/
+**/android/app/src/main/res/drawable-hdpi/
+**/android/app/src/main/res/drawable-mdpi/
+**/android/app/src/main/res/drawable-xxhdpi/
+**/android/app/src/main/res/drawable-xxxhdpi/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Symbolication related
+app.*.symbols
+
+# Executable distributions
+*.apk
+*.aab
+*.ipa
+
+# Android Studio will pack confidence-annotations.jar into the apk-binary if they are not excluded.
+**/android/app/libs/confidence-annotations.jar
+
+# Google Service Device Indexing
+**/android/app/google-services.json
+
+# Exceptions to allow checking in local.properties and key.properties if defined in your workflow
+# !local.properties
+# !key.properties
+
+# Secrets
+**/ios/Flutter/GeneratedConfig.xcconfig
+**/macos/Flutter/GeneratedConfig.xcconfig
+
+# Flutter tests
+test_driver/

@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'mlx_localllm'
-  s.version          = '0.2.9'
+  s.version          = '0.2.10'
   s.summary          = 'A high-performance local LLM plugin for macOS using Apple MLX.'
   s.description      = <<-DESC
 A high-performance local LLM plugin for macOS using Apple's MLX framework. Supports model downloading and inference.

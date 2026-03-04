@@ -1,3 +1,8 @@
+# 0.2.10
+
+* **Fixed iOS SPM Support**: Added `ios/mlx_localllm/Package.swift` to satisfy native Swift Package Manager requirements on iOS.
+* **Unified Native Structure**: Ensured both `ios` and `macos` directories have identical Swift Package structures for better compatibility.
+
 # 0.2.9
 
 * **iOS Support**: Added full support for iOS (iPhone/iPad) using Apple's MLX framework.

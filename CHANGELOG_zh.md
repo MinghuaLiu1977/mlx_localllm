@@ -1,3 +1,8 @@
+# 0.2.10
+
+* **修复 iOS SPM 支持**: 增加了 `ios/mlx_localllm/Package.swift`，以满足 iOS 平台对原生 Swift Package Manager 的识别要求。
+* **统一原生结构**: 确保 `ios` 和 `macos` 目录具有完全一致的 Swift Package 结构，提升兼容性评分。
+
 # 0.2.9
 
 * **iOS 支持**: 增加对 iOS 平台（iPhone/iPad）的完整支持，基于 Apple MLX 框架。

@@ -1,16 +1,38 @@
 # mlx_localllm_example
 
-Demonstrates how to use the mlx_localllm plugin.
+A comprehensive example application demonstrating the full capabilities of the `mlx_localllm` plugin on macOS and iOS.
 
-## Getting Started
+## Features Demonstrated
 
-This project is a starting point for a Flutter application.
+- **Platform Support Checking**: Detects if the current device supports MLX acceleration.
+- **Model Discovery**: Shows how to download models from Hugging Face or mirrors.
+- **Download Management**: Real-time progress tracking and cancellation support.
+- **Inference Engine**: Loading local models and generating text with adjustable parameters (temperature, stop sequences).
 
-A few resources to get you started if this is your first Flutter project:
+## Running the Example
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 1. Requirements
+- **Hardware**: A physical Apple Silicon device (iPhone/iPad with iOS 17+ or Mac with macOS 14+).
+- **Toolchain**: Xcode 15+ and Flutter 3.24+.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 2. Setup
+No manual dependency configuration is required as the plugin uses native SPM support.
+
+```bash
+flutter pub get
+```
+
+### 3. Execution
+
+#### For macOS:
+```bash
+flutter run -d macos
+```
+
+#### For iOS (Real Device):
+```bash
+flutter run -d ios
+```
+
+## Note on Models
+The example default to downloading `mlx-community/Qwen2.5-0.5B-Instruct-4bit`. Ensure you have a stable internet connection for the initial download (~350MB).

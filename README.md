@@ -1,5 +1,7 @@
 # mlx_localllm
 
+![mlx_localllm_mockup](file:///Users/minghualiu/.gemini/antigravity/brain/4fcf25fc-9ae6-463d-8ef3-940782249222/mlx_localllm_mockup_png_1772604563112.png)
+
 [English](#english) | [简体中文](#简体中文)
 
 ---
@@ -10,10 +12,21 @@
 A Flutter plugin for high-performance localized LLM inference on macOS using Apple's **MLX** framework. It provides zero-latency interaction by loading models directly into the application process.
 
 ### Features
-- 🚀 **Native Acceleration**: Built on MLX for optimal performance on Apple Silicon.
-- 📦 **In-Process**: No external dependencies like Ollama required.
-- 🌐 **Robust Downloader**: Built-in support for HuggingFace and mirrors (hf-mirror.com) with resilient progress reporting.
-- 🛠️ **Easy Integration**: Comprehensive API for model management and inference.
+- 🚀 **Native Acceleration**: Built on Apple's MLX for optimal performance on Apple Silicon.
+- 📦 **In-Process Inference**: No external sidecars or servers (like Ollama) required.
+- 🌐 **Robust Downloader**: Built-in support for Hugging Face and mirrors with resilient chunk-based downloading.
+- 🛠️ **Full Lifecycle**: From model discovery and download to stateful conversational inference.
+
+### Platform Support
+
+| Platform | Support | Architecture | Min OS |
+| :--- | :---: | :--- | :--- |
+| **iOS** | ✅ | Apple Silicon (ARM64) | 17.0+ |
+| **macOS** | ✅ | Apple Silicon (ARM64) | 14.0+ |
+| **Android** | ❌ | - | - |
+| **Windows** | ❌ | - | - |
+| **Linux** | ❌ | - | - |
+| **Web** | ❌ | - | - |
 
 ### Requirements
 - **iOS**: 17.0 or higher.
@@ -29,8 +42,9 @@ A Flutter plugin for high-performance localized LLM inference on macOS using App
    ```
 
 2. **Platform Setup**:
-   - **macOS/iOS**: The plugin uses Swift Package Manager (SPM) to manage MLX dependencies. Flutter (3.24+) will automatically resolve these dependencies.
-   - **Real Device Required**: MLX requires Metal GPU support, so inference only works on physical Apple Silicon devices (M1, M2, iPhone 12+, etc.), not in simulators.
+   The plugin uses **Swift Package Manager (SPM)** natively (requires Flutter 3.24+).
+   - **macOS/iOS**: Dependencies are automatically resolved by the Flutter toolchain. No manual Xcode configuration is typically required.
+   - **Real Device Required**: Inference requires Metal GPU acceleration. It **will not run on simulators**.
 
 ### Usage
 
@@ -62,10 +76,21 @@ print(response);
 基于 Apple **MLX** 框架的 macOS 高性能本地大模型推理 Flutter 插件。通过将模型直接加载到应用进程中，提供零延迟的交互体验。
 
 ### 特性
-- 🚀 **原生加速**: 基于 MLX 针对 Apple Silicon 深度优化。
-- 📦 **进程内推理**: 无需安装 Ollama 等外部服务，集成度高。
-- 🌐 **鲁棒下载器**: 内置对 HuggingFace 及其镜像站（如 hf-mirror.com）的支持，优化了进度上报稳定性。
-- 🛠️ **全功能 API**: 提供完整的模型下载、删除、状态检查库及推理引擎。
+- 🚀 **原生加速**: 基于 Apple MLX 针对 Apple Silicon 芯片深度优化。
+- 📦 **进程内推理**: 无需安装 Ollama 等外部服务，零延迟通信。
+- 🌐 **鲁棒下载器**: 内置分块下载机制，支持 Hugging Face 及其镜像站。
+- 🛠️ **全栈能力**: 提供从模型搜索、下载、管理到推断的完整链路。
+
+### 平台支持
+
+| 平台 | 支持 | 架构 | 最低系统版本 |
+| :--- | :---: | :--- | :--- |
+| **iOS** | ✅ | Apple Silicon (ARM64) | 17.0+ |
+| **macOS** | ✅ | Apple Silicon (ARM64) | 14.0+ |
+| **Android** | ❌ | - | - |
+| **Windows** | ❌ | - | - |
+| **Linux** | ❌ | - | - |
+| **Web** | ❌ | - | - |
 
 ### 系统要求
 - **iOS**: 17.0 及以上。

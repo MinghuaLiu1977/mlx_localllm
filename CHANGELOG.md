@@ -1,3 +1,7 @@
+# 0.2.5
+
+* **Fixed Dependency**: Corrected MLX dependency repository from `mlx-swift-llm` to `mlx-swift-lm`. This ensures the latest MLX core features are correctly integrated.
+
 # 0.2.4
 
 * **Fixed SPM Detection**: Restructured native directories to `ios/mlx_localllm/` and `macos/mlx_localllm/` as required by `pub.dev` score analyzer (`pana`). This ensures full native Swift Package Manager support is correctly recognized.

@@ -1,3 +1,7 @@
+# 0.2.5
+
+* **修复依赖**: 将 MLX 依赖仓库从 `mlx-swift-llm` 修正为 `mlx-swift-lm`。这确保了 MLX 核心功能的正确集成。
+
 # 0.2.4
 
 * **修复 SPM 检测问题**: 将原生目录结构调整为 `ios/mlx_localllm/` 和 `macos/mlx_localllm/`，以符合 `pub.dev` 评分分析器 (`pana`) 的要求。这确保了原生 Swift Package Manager 支持能被正确识别。

@@ -28,21 +28,9 @@ A Flutter plugin for high-performance localized LLM inference on macOS using App
    flutter pub add mlx_localllm
    ```
 
-2. **CRITICAL STEP**: Since this plugin relies on Swift Package Manager (SPM) for MLX, you must configure your project:
-
-   #### For macOS
-   ```bash
-   cd macos
-   ruby ../path/to/mlx_localllm/scripts/setup_example_macos.rb
-   ```
-
-   #### For iOS
-   Due to the current limitations of CocoaPods and SPM integration in Flutter, you need to manually add the dependency:
-   1. Open `ios/Runner.xcworkspace` in Xcode.
-   2. Go to **Project Settings** -> **Package Dependencies**.
-   3. Add `https://github.com/ml-explore/mlx-swift-llm`.
-   4. Ensure the **Runner** Target includes the library in **Frameworks, Libraries, and Embedded Content**.
-   5. **Real Device Required**: MLX does not support the iOS Simulator (Metal GPU requirement).
+2. **Platform Setup**:
+   - **macOS/iOS**: The plugin uses Swift Package Manager (SPM) to manage MLX dependencies. Flutter (3.24+) will automatically resolve these dependencies.
+   - **Real Device Required**: MLX requires Metal GPU support, so inference only works on physical Apple Silicon devices (M1, M2, iPhone 12+, etc.), not in simulators.
 
 ### Usage
 
@@ -92,20 +80,9 @@ print(response);
    flutter pub add mlx_localllm
    ```
 
-2. **关键步骤**: 该插件通过 Swift Package Manager (SPM) 引用 MLX，由于 CocoaPods 与 SPM 的集成限制，您需要进行以下配置：
-
-   #### macOS 配置
-   ```bash
-   cd macos
-   ruby path/to/mlx_localllm/scripts/setup_example_macos.rb
-   ```
-
-   #### iOS 配置
-   需手动在 Xcode 中关联依赖：
-   1. 使用 Xcode 打开 `ios/Runner.xcworkspace`。
-   2. 在 **Project Settings** -> **Package Dependencies** 中添加包：`https://github.com/ml-explore/mlx-swift-llm`。
-   3. 确保 **Runner** Target 的 **Frameworks, Libraries, and Embedded Content** 已包含该库。
-   4. **必须使用真机**: iOS 模拟器由于不支持 Metal GPU 扩展，无法运行 MLX。
+2. **平台配置**:
+   - **macOS/iOS**: 插件使用 Swift Package Manager (SPM) 管理 MLX 依赖。Flutter (3.24+) 会自动处理这些依赖。
+   - **必须使用真机**: MLX 需要 Metal GPU 加持，推理功能仅在物理设备（M1、M2、iPhone 12+ 等）上运行，不支持模拟器。
 
 ### 快速开始
 

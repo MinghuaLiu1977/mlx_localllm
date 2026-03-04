@@ -1,3 +1,8 @@
+# 0.2.1
+
+* **Native SPM support**: Added native Swift Package Manager support in `pubspec.yaml`. No manual Xcode configuration required for MLX dependencies.
+* Improved pub.dev platform score.
+
 # 0.2.0
 
 * **Added iOS support** (iPhone, iPad).

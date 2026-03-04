@@ -1,3 +1,8 @@
+# 0.2.1
+
+* **原生 SPM 支持**: 在 `pubspec.yaml` 中增加了原生 Swift Package Manager 支持。不再需要手动在 Xcode 中配置 MLX 依赖。
+* 提升了 pub.dev 的平台评分。
+
 # 0.2.0
 
 * **新增 iOS 支持** (iPhone, iPad)。

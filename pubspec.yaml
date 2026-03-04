@@ -1,6 +1,6 @@
 name: mlx_localllm
 description: "A high-performance local LLM plugin for macOS using Apple's MLX framework."
-version: 0.2.0
+version: 0.2.1
 repository: https://github.com/MinghuaLiu1977/mlx_localllm
 homepage: https://github.com/MinghuaLiu1977/mlx_localllm
 
@@ -42,6 +42,11 @@ flutter:
         pluginClass: MlxLocalllmPlugin
       ios:
         pluginClass: MlxLocalllmPlugin
+    spm_dependencies:
+      - name: mlx-swift-llm
+        url: https://github.com/ml-explore/mlx-swift-llm
+        version:
+          branch: main
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

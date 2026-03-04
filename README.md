@@ -1,6 +1,6 @@
 # mlx_localllm
 
-![mlx_localllm_mockup](file:///Users/minghualiu/.gemini/antigravity/brain/4fcf25fc-9ae6-463d-8ef3-940782249222/mlx_localllm_mockup_png_1772604563112.png)
+![mlx_localllm_mockup](assets/mlx_localllm_mockup.png)
 
 [English](#english) | [简体中文](#简体中文)
 

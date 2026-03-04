@@ -1,6 +1,6 @@
 name: mlx_localllm
 description: "A high-performance local LLM plugin for macOS using Apple's MLX framework."
-version: 0.2.2
+version: 0.2.3
 repository: https://github.com/MinghuaLiu1977/mlx_localllm
 homepage: https://github.com/MinghuaLiu1977/mlx_localllm
 

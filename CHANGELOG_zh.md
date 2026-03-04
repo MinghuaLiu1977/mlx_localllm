@@ -1,3 +1,7 @@
+# 0.2.3
+
+* **修复文档问题**: 修复了 README 中图片链接使用本地路径的问题。现在使用符合 pub.dev 要求的相对路径。
+
 # 0.2.2
 
 * **完善 Swift Package Manager 支持**: 在 `ios/` 和 `macos/` 目录下增加了 `Package.swift` 文件。这完全满足了原生 SPM 的要求，并提升了 pub.dev 上的平台评分。

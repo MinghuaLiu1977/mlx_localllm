@@ -1,3 +1,7 @@
+# 0.2.3
+
+* **Fixed Documentation**: Fixed an issue where the mockup image link was using an insecure local path. Now using a relative path compatible with pub.dev.
+
 # 0.2.2
 
 * **Full Swift Package Manager Support**: Added `Package.swift` to both `ios/` and `macos/` directories. This fully satisfies native SPM requirements and improves the platform score on pub.dev.

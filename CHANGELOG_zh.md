@@ -1,3 +1,10 @@
+# 0.2.11
+
+* **改进推理日志**: 实现了行缓冲日志输出，支持实时的推理过程监控，提升了日志的可读性。
+* **支持 Jinja 模板参数**: 增加了向模型分词器传递 `chat_template_kwargs` 的功能，支持动态控制模型行为。
+* **修复思考模式显示**: 默认注入 `add_generation_prompt` 参数并优化了输出清洗逻辑，确保 Qwen3.5 等模型的 `<think>` 标签和推理过程能正确渲染。
+* **类型安全的参数传递**: 在 Swift 原生层实现了 `additionalContext` 的健壮类型转换，确保 Dart 传入的各种格式参数都能被正确解析。
+
 # 0.2.10
 
 * **修复 iOS SPM 支持**: 增加了 `ios/mlx_localllm/Package.swift`，以满足 iOS 平台对原生 Swift Package Manager 的识别要求。

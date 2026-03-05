@@ -59,8 +59,10 @@ bool supported = await MlxLocalllm().isSupported();
 ```dart
 // Track progress via modelEvents stream
 MlxLocalllm().modelEvents.listen((event) {
-  if (event['type'] == 'downloadProgress') {
-    print('Download progress: ${event['value'] * 100}%');
+  if (event['event'] == 'progress') {
+    print('Download progress: ${event['progress'] * 100}%');
+  } else if (event['event'] == 'complete') {
+    print('Download complete at ${event['path']}');
   }
 });
 
@@ -72,6 +74,35 @@ await MlxLocalllm().downloadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
 await MlxLocalllm().loadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
 String response = await MlxLocalllm().generate(prompt: 'Hello, who are you?');
 print(response);
+
+#### Advanced Configuration
+Align with official standards (Qwen/OpenAI):
+```dart
+final result = await MlxLocalllm().generate(
+  prompt: 'Write a poem',
+  config: GenerateConfig(
+    temperature: 0.7,
+    topP: 0.95,
+    presencePenalty: 1.5,
+    // Pass custom parameters to the chat template/tokenizer
+    extraBody: {
+      "top_k": 20,
+      "chat_template_kwargs": {"enable_thinking": true}
+    },
+  ),
+);
+```
+
+#### Thinking Mode (Reasoning)
+For models like Qwen3.5 that support a reasoning process, you can enable it via `chat_template_kwargs`:
+- **Show Reasoning**: Set `enable_thinking: true`. The output will include `<think>` tags.
+- **Hide Reasoning**: Set `enable_thinking: false`.
+
+// Streaming Inference (Typewriter effect)
+final stream = MlxLocalllm().generateStream(prompt: 'Write a poem about the sea.');
+await for (final text in stream) {
+  print(text); // Prints chunks as they are generated
+}
 ```
 
 ---
@@ -129,8 +160,10 @@ bool supported = await MlxLocalllm().isSupported();
 ```dart
 // 通过 modelEvents 流监听进度
 MlxLocalllm().modelEvents.listen((event) {
-  if (event['type'] == 'downloadProgress') {
-    print('下载进度: ${event['value'] * 100}%');
+  if (event['event'] == 'progress') {
+    print('下载进度: ${event['progress'] * 100}%');
+  } else if (event['event'] == 'complete') {
+    print('下载完成，路径: ${event['path']}');
   }
 });
 
@@ -142,6 +175,34 @@ await MlxLocalllm().downloadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
 await MlxLocalllm().loadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
 String response = await MlxLocalllm().generate(prompt: '你好，请做下自我介绍');
 print(response);
+
+#### 进阶配置
+支持向模型 Tokenizer 传递自定义参数（如思考模式）：
+
+```dart
+final result = await MlxLocalllm().generate(
+  prompt: '请写一首关于秋天的诗',
+  config: GenerateConfig(
+    temperature: 0.7,
+    topP: 0.8,
+    // 通过 extraBody 传递特定于模型的参数
+    extraBody: {
+      "chat_template_kwargs": {"enable_thinking": true}
+    },
+  ),
+);
+```
+
+#### 推理模式 (Thinking Mode)
+对于支持推理过程的模型（如 Qwen3.5），可以通过 `chat_template_kwargs` 控制：
+- **开启推理显示**：设置 `enable_thinking: true`，输出将包含原始的 `<think>` 标签。
+- **关闭推理显示**：设置 `enable_thinking: false`。
+
+// 流式推送 (打字机效果)
+final stream = MlxLocalllm().generateStream(prompt: '写一首关于秋天的诗');
+await for (final text in stream) {
+  print(text); // 会在生成时逐步打印文本
+}
 ```
 
 ### 许可证

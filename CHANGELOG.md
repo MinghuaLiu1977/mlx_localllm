@@ -1,3 +1,10 @@
+# 0.2.11
+
+* **Improved Inference Logging**: Implemented line-buffered logging for real-time inference monitoring with better readability.
+* **Jinja Template Support**: Added support for passing `chat_template_kwargs` to the model tokenizer, enabling dynamic control over model behavior.
+* **Thinking Mode Fix**: Injected `add_generation_prompt` by default and optimized output cleaning to ensure `<think>` tags and reasoning processes are correctly rendered.
+* **Type-Safe Parameter Passing**: Implemented robust type conversion for `additionalContext` in Swift to handle various input formats from Dart.
+
 # 0.2.10
 
 * **Fixed iOS SPM Support**: Added `ios/mlx_localllm/Package.swift` to satisfy native Swift Package Manager requirements on iOS.

@@ -5,10 +5,27 @@ import Flutter
 #endif
 import Foundation
 
+class MLXStreamHandler: NSObject, FlutterStreamHandler {
+    var sink: FlutterEventSink?
+    
+    func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        self.sink = events
+        return nil
+    }
+    
+    func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        self.sink = nil
+        return nil
+    }
+}
+
+
 public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
     
     private var mlxService: NativeMLXService?
     private var channel: FlutterMethodChannel?
+    private let progressStreamHandler = MLXStreamHandler()
+    private let generateStreamHandler = MLXStreamHandler()
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         #if os(macOS)
@@ -20,6 +37,12 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
         let instance = MlxLocalllmPlugin()
         instance.channel = channel
         registrar.addMethodCallDelegate(instance, channel: channel)
+
+        let progressChannel = FlutterEventChannel(name: "mlx_localllm_events", binaryMessenger: messenger)
+        progressChannel.setStreamHandler(instance.progressStreamHandler)
+        
+        let generateChannel = FlutterEventChannel(name: "mlx_localllm_generate_events", binaryMessenger: messenger)
+        generateChannel.setStreamHandler(instance.generateStreamHandler)
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -99,20 +122,26 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
                 let isAvailable = true
                 #endif
                 
-                await self.mlxService?.downloadModel(repoId: repoId, endpoint: endpoint, onProgress: { progress in
-                    let progressArgs: [String: Any] = ["repoId": repoId, "progress": progress]
+                await self.mlxService?.downloadModel(repoId: repoId, endpoint: endpoint, onProgress: { progress, downloadedBytes, totalBytes in
+                    let data: [String: Any] = [
+                        "event": "progress", 
+                        "repoId": repoId, 
+                        "progress": progress,
+                        "downloadedBytes": downloadedBytes,
+                        "totalBytes": totalBytes
+                    ]
                     DispatchQueue.main.async {
-                        channel?.invokeMethod("downloadProgress", arguments: progressArgs)
+                        self.progressStreamHandler.sink?(data)
                     }
                 }, onComplete: { path in
-                    let completeArgs: [String: Any] = ["repoId": repoId, "path": path]
+                    let data: [String: Any] = ["event": "complete", "repoId": repoId, "path": path]
                     DispatchQueue.main.async {
-                        channel?.invokeMethod("downloadComplete", arguments: completeArgs)
+                        self.progressStreamHandler.sink?(data)
                     }
                 }, onError: { errorMsg in
-                    let errorArgs: [String: Any] = ["repoId": repoId, "error": errorMsg]
+                    let data: [String: Any] = ["event": "error", "repoId": repoId, "error": errorMsg]
                     DispatchQueue.main.async {
-                        channel?.invokeMethod("downloadError", arguments: errorArgs)
+                        self.progressStreamHandler.sink?(data)
                     }
                 })
             }
@@ -171,6 +200,23 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(code: "DELETE_FAILED", message: error.localizedDescription, details: nil))
                 }
             }
+        case "setCustomStoragePath":
+            let args = call.arguments as? [String: Any]
+            let path = args?["path"] as? String
+            Task {
+                await self.mlxService?.setCustomModelDirectory(path: path)
+                result(nil)
+            }
+        case "getDownloadedModels":
+            Task {
+                let models = await self.mlxService?.getDownloadedModels() ?? []
+                result(models)
+            }
+        case "getCurrentStoragePath":
+            Task {
+                let path = await self.mlxService?.getCurrentStoragePath() ?? ""
+                result(path)
+            }
         case "generate":
             #if arch(arm64)
             guard let args = call.arguments as? [String: Any],
@@ -180,16 +226,34 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
             }
             Task {
                 do {
-                    let temperature = args["temperature"] as? Double ?? 0.0
+                    let temperature = (args["temperature"] as? NSNumber)?.floatValue ?? 0.0
+                    let maxTokens = (args["max_tokens"] as? NSNumber)?.intValue ?? 1024
                     let stopSequences = args["stop_sequences"] as? [String] ?? []
                     
+                    var extraOptions = args
+                    extraOptions.removeValue(forKey: "prompt")
+                    extraOptions.removeValue(forKey: "temperature")
+                    extraOptions.removeValue(forKey: "max_tokens")
+                    extraOptions.removeValue(forKey: "stop_sequences")
+                    
+                    var extraJSON = "{}"
+                    if let jsonData = try? JSONSerialization.data(withJSONObject: extraOptions, options: [.prettyPrinted, .sortedKeys]),
+                       let jsonString = String(data: jsonData, encoding: .utf8) {
+                        extraJSON = jsonString
+                    }
+                    
+                    NSLog("[MLX] Generate Prompt: %@", prompt as NSString)
+                    NSLog("[MLX] Config: temperature=%f, max_tokens=%d, extra_body=%@", Float(temperature), Int32(maxTokens), extraJSON as NSString)
+
                     var response: String?
                     #if os(macOS)
                     if #available(macOS 14.0, *) {
                         response = try await self.mlxService?.generate(
                             prompt: prompt,
                             temperature: Float(temperature),
-                            stopSequences: stopSequences
+                            maxTokens: maxTokens,
+                            stopSequences: stopSequences,
+                            extraOptions: extraOptions
                         )
                     }
                     #elseif os(iOS)
@@ -197,13 +261,91 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
                         response = try await self.mlxService?.generate(
                             prompt: prompt,
                             temperature: Float(temperature),
-                            stopSequences: stopSequences
+                            maxTokens: maxTokens,
+                            stopSequences: stopSequences,
+                            extraOptions: extraOptions
                         )
                     }
                     #endif
                     
                     result(response ?? "")
                 } catch {
+                    result(FlutterError(code: "INFERENCE_FAILED", message: error.localizedDescription, details: nil))
+                }
+            }
+            #else
+            result(FlutterError(code: "UNSUPPORTED_ARCH", message: "Apple Silicon required", details: nil))
+            #endif
+        case "generateStream":
+            #if arch(arm64)
+            guard let args = call.arguments as? [String: Any],
+                  let prompt = args["prompt"] as? String else {
+                result(FlutterError(code: "INVALID_ARGUMENTS", message: "Missing prompt", details: nil))
+                return
+            }
+            Task {
+                do {
+                    let temperature = (args["temperature"] as? NSNumber)?.floatValue ?? 0.0
+                    let maxTokens = (args["max_tokens"] as? NSNumber)?.intValue ?? 1024
+                    let stopSequences = args["stop_sequences"] as? [String] ?? []
+                    
+                    var extraOptions = args
+                    extraOptions.removeValue(forKey: "prompt")
+                    extraOptions.removeValue(forKey: "temperature")
+                    extraOptions.removeValue(forKey: "max_tokens")
+                    extraOptions.removeValue(forKey: "stop_sequences")
+                    
+                    var extraJSON = "{}"
+                    if let jsonData = try? JSONSerialization.data(withJSONObject: extraOptions, options: [.prettyPrinted, .sortedKeys]),
+                       let jsonString = String(data: jsonData, encoding: .utf8) {
+                        extraJSON = jsonString
+                    }
+                    
+                    NSLog("[MLX] GenerateStream Prompt: %@", prompt as NSString)
+                    NSLog("[MLX] Config: temperature=%f, max_tokens=%d, extra_body=%@", Float(temperature), Int32(maxTokens), extraJSON as NSString)
+
+                    #if os(macOS)
+                    if #available(macOS 14.0, *) {
+                        try await self.mlxService?.generateStream(
+                            prompt: prompt,
+                            temperature: Float(temperature),
+                            maxTokens: maxTokens,
+                            stopSequences: stopSequences,
+                            extraOptions: extraOptions,
+                            onToken: { token in
+                                DispatchQueue.main.async {
+                                    self.generateStreamHandler.sink?(["text": token])
+                                }
+                            }
+                        )
+                        DispatchQueue.main.async {
+                            self.generateStreamHandler.sink?(["done": true])
+                        }
+                    }
+                    #elseif os(iOS)
+                    if #available(iOS 17.0, *) {
+                        try await self.mlxService?.generateStream(
+                            prompt: prompt,
+                            temperature: Float(temperature),
+                            maxTokens: maxTokens,
+                            stopSequences: stopSequences,
+                            extraOptions: extraOptions,
+                            onToken: { token in
+                                DispatchQueue.main.async {
+                                    self.generateStreamHandler.sink?(["text": token])
+                                }
+                            }
+                        )
+                        DispatchQueue.main.async {
+                            self.generateStreamHandler.sink?(["done": true])
+                        }
+                    }
+                    #endif
+                    result(true)
+                } catch {
+                    DispatchQueue.main.async {
+                        self.generateStreamHandler.sink?(FlutterError(code: "INFERENCE_FAILED", message: error.localizedDescription, details: nil))
+                    }
                     result(FlutterError(code: "INFERENCE_FAILED", message: error.localizedDescription, details: nil))
                 }
             }

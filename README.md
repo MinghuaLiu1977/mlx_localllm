@@ -69,39 +69,69 @@ MlxLocalllm().modelEvents.listen((event) {
 await MlxLocalllm().downloadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
 ```
 
-#### Run Inference
-```dart
-await MlxLocalllm().loadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
-String response = await MlxLocalllm().generate(prompt: 'Hello, who are you?');
-print(response);
+### API Reference
 
-#### Advanced Configuration
-Align with official standards (Qwen/OpenAI):
+#### `MlxLocalllm` Singleton
+
+| Method | Description | Returns |
+| :--- | :--- | :--- |
+| `isSupported()` | Checks if hardware supports MLX (requires Apple Silicon GPU). | `Future<bool>` |
+| `downloadModel(repoId)` | Starts background download from HF. Monitor via `modelEvents`. | `Future<bool>` |
+| `loadModel(path)` | Loads model into memory from absolute path or repoId. | `Future<bool>` |
+| `unloadModel()` | Releases model and frees system memory. | `Future<bool>` |
+| `generate(prompt, config)` | Generates complete response (blocking). | `Future<String>` |
+| `generateStream(prompt, config)` | Yields text chunks in real-time. | `Stream<String>` |
+| `checkModelExists(repoId)` | Checks if model folder exists locally. | `Future<bool>` |
+| `deleteModel(repoId)` | Deletes model from disk. | `Future<bool>` |
+| `setCustomStoragePath(path)` | Sets/Resets model storage root folder. | `Future<void>` |
+
+---
+
+#### `GenerateConfig` Parameters
+
+Detailed control over model output:
+
+| Parameter | Type | Default | Description |
+| :--- | :---: | :---: | :--- |
+| `temperature` | `double` | `0.0` | Higher = creative, Lower = deterministic. |
+| `maxTokens` | `int` | `1024` | Maximum length of generated response. |
+| `topP` | `double` | `0.95` | Nucleus sampling probability threshold. |
+| `presence_penalty`| `double` | `0.0` | Positive values penalize tokens already present. |
+| `stopSequences` | `List` | `[]` | Tokens that stop generation (e.g. `["\nUser:"]`). |
+| `extraBody` | `String` | `null` | A JSON string for advanced backend options. |
+
+---
+
+#### Advanced Configuration (`extraBody`)
+
+Pass advanced parameters through `extraBody` as a JSON string:
+
 ```dart
-final result = await MlxLocalllm().generate(
-  prompt: 'Write a poem',
-  config: GenerateConfig(
-    temperature: 0.7,
-    topP: 0.95,
-    presencePenalty: 1.5,
-    // Pass custom parameters to the chat template/tokenizer
-    extraBody: {
-      "top_k": 20,
-      "chat_template_kwargs": {"enable_thinking": true}
-    },
-  ),
-);
+GenerateConfig(
+  extraBody: jsonEncode({
+    "top_k": 50,
+    "repetition_penalty": 1.2,
+    "chat_template_kwargs": {
+      "enable_thinking": true  // Required for reasoning models like Qwen3.5
+    }
+  })
+)
 ```
 
-#### Thinking Mode (Reasoning)
-For models like Qwen3.5 that support a reasoning process, you can enable it via `chat_template_kwargs`:
-- **Show Reasoning**: Set `enable_thinking: true`. The output will include `<think>` tags.
-- **Hide Reasoning**: Set `enable_thinking: false`.
+#### Thinking Mode (Reasoning) Guide
+Thinking models (like **Qwen/Qwen3.5-7B-Instruct**) use a special template logic to externalize their reasoning process.
+1. **Enable Reasoning**: Include `"enable_thinking": true` in `chat_template_kwargs`.
+2. **Handle Output**: The model will output text enclosed in `<think>...</think>` tags before the final answer.
+3. **Hide Reasoning**: Set `"enable_thinking": false`. Depending on the model's template, it may output no tags or empty tags.
 
-// Streaming Inference (Typewriter effect)
-final stream = MlxLocalllm().generateStream(prompt: 'Write a poem about the sea.');
-await for (final text in stream) {
-  print(text); // Prints chunks as they are generated
+### Error Handling
+The plugin throws `MlxEngineException` for native errors. Always wrap calls in try-catch:
+
+```dart
+try {
+  await MlxLocalllm().generate(prompt: "...");
+} on MlxEngineException catch (e) {
+  print("Code: ${e.code}, Message: ${e.message}");
 }
 ```
 
@@ -149,59 +179,69 @@ await for (final text in stream) {
      - **Apple Silicon (ARM64)**: 原生支持，具备 MLX 加速。
      - **Intel (x86_64)**: 支持 **Mock 编译**。您可以在 Intel Mac 上正常编译和链接项目，但推理调用将返回“不支持的架构”错误。这极大地方便了跨架构的协同开发。
 
-### 快速开始
+### API 参考
 
-#### 硬件支持检测
+#### `MlxLocalllm` 单例方法
+
+| 方法 | 描述 | 返回值 |
+| :--- | :--- | :--- |
+| `isSupported()` | 检查硬件是否支持 MLX (需要 Apple Silicon GPU)。 | `Future<bool>` |
+| `downloadModel(repoId)` | 从 HuggingFace 开始后台下载。需通过 `modelEvents` 监控进度。 | `Future<bool>` |
+| `loadModel(path)` | 从绝对路径或 repoId 将模型加载到内存。 | `Future<bool>` |
+| `unloadModel()` | 从内存中卸载模型，释放系统资源。 | `Future<bool>` |
+| `generate(prompt, config)` | 生成完整文本响应（阻塞式）。 | `Future<String>` |
+| `generateStream(prompt, config)` | 实时返回生成的文本片段。 | `Stream<String>` |
+| `checkModelExists(repoId)` | 检查模型文件夹是否已在本地存在。 | `Future<bool>` |
+| `deleteModel(repoId)` | 从磁盘删除模型。 | `Future<bool>` |
+| `setCustomStoragePath(path)` | 设置或重置模型的根存储目录。 | `Future<void>` |
+
+---
+
+#### `GenerateConfig` 配置参数
+
+用于精确控制模型输出行为：
+
+| 参数 | 类型 | 默认值 | 描述 |
+| :--- | :---: | :---: | :--- |
+| `temperature` | `double` | `0.0` | 越高越具创造性，越低越确定（Deterministic）。 |
+| `maxTokens` | `int` | `1024` | 响应生成的最大 Token 数量。 |
+| `topP` | `double` | `0.95` | 核采样（Nucleus sampling）概率阈值。 |
+| `presence_penalty`| `double` | `0.0` | 正值会惩罚已出现的 Token，减少重复。 |
+| `stopSequences` | `List` | `[]` | 停止生成的序列（如 `["\nUser:"]`）。 |
+| `extraBody` | `String` | `null` | 传递给原生层的高级 JSON 配置字符串。 |
+
+---
+
+#### 高级配置 (`extraBody`)
+
+通过 `extraBody` 以 JSON 字符串形式传递底层高级参数：
+
 ```dart
-bool supported = await MlxLocalllm().isSupported();
+GenerateConfig(
+  extraBody: jsonEncode({
+    "top_k": 50,
+    "repetition_penalty": 1.2,
+    "chat_template_kwargs": {
+      "enable_thinking": true  // 针对 Qwen3.5 等推理模型必填
+    }
+  })
+)
 ```
 
-#### 模型下载
-```dart
-// 通过 modelEvents 流监听进度
-MlxLocalllm().modelEvents.listen((event) {
-  if (event['event'] == 'progress') {
-    print('下载进度: ${event['progress'] * 100}%');
-  } else if (event['event'] == 'complete') {
-    print('下载完成，路径: ${event['path']}');
-  }
-});
+#### 推理模式 (Thinking Mode) 指南
+推理模型（如 **Qwen/Qwen3.5-7B-Instruct**）使用特殊的模板逻辑来外部化其思维链（CoT）。
+1. **启动推理**: 在 `chat_template_kwargs` 中包含 `"enable_thinking": true`。
+2. **输出处理**: 模型会在最终回答前输出被 `<think>...</think>` 标签包裹的思维过程。
+3. **关闭推理**: 设置 `"enable_thinking": false`。根据模型模板不同，可能不输出标签或输出空标签。
 
-await MlxLocalllm().downloadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
-```
-
-#### 执行推理
-```dart
-await MlxLocalllm().loadModel('mlx-community/Qwen2.5-0.5B-Instruct-4bit');
-String response = await MlxLocalllm().generate(prompt: '你好，请做下自我介绍');
-print(response);
-
-#### 进阶配置
-支持向模型 Tokenizer 传递自定义参数（如思考模式）：
+### 错误处理
+插件在发生原生错误时会抛出 `MlxEngineException`。建议始终使用 try-catch 包裹调用：
 
 ```dart
-final result = await MlxLocalllm().generate(
-  prompt: '请写一首关于秋天的诗',
-  config: GenerateConfig(
-    temperature: 0.7,
-    topP: 0.8,
-    // 通过 extraBody 传递特定于模型的参数
-    extraBody: {
-      "chat_template_kwargs": {"enable_thinking": true}
-    },
-  ),
-);
-```
-
-#### 推理模式 (Thinking Mode)
-对于支持推理过程的模型（如 Qwen3.5），可以通过 `chat_template_kwargs` 控制：
-- **开启推理显示**：设置 `enable_thinking: true`，输出将包含原始的 `<think>` 标签。
-- **关闭推理显示**：设置 `enable_thinking: false`。
-
-// 流式推送 (打字机效果)
-final stream = MlxLocalllm().generateStream(prompt: '写一首关于秋天的诗');
-await for (final text in stream) {
-  print(text); // 会在生成时逐步打印文本
+try {
+  await MlxLocalllm().generate(prompt: "...");
+} on MlxEngineException catch (e) {
+  print("错误码: ${e.code}, 消息: ${e.message}");
 }
 ```
 

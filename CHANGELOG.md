@@ -1,3 +1,11 @@
+# 0.2.13
+
+* **Optimized Logging**: Wrapped all `print`, `debugPrint`, and `NSLog` statements with `kDebugMode` (Dart) or `#if DEBUG` (Swift) to ensure logs are only active in debug mode, improving performance and reducing log clutter in release builds.
+
+# 0.2.12
+
+* **Comprehensive Documentation Update**: Greatly expanded `README.md` with detailed API references, parameter tables, and a thinking mode guide. Added extensive DartDoc comments to `lib/mlx_localllm.dart` for better IDE support.
+
 # 0.2.11
 
 * **Improved Inference Logging**: Implemented line-buffered logging for real-time inference monitoring with better readability.

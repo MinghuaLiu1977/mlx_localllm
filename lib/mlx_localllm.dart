@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 /// Exceptions specific to MLX Engine
 class MlxEngineException implements Exception {
@@ -24,17 +25,26 @@ class GenerateConfig {
   /// Defaults to null (backend default).
   final int? maxTokens;
 
-  /// Nucleus sampling: only consider tokens with a cumulative probability
-  /// of [topP]. Defaults to null.
+  /// nucleus sampling: only consider tokens with a cumulative probability
+  /// of [topP]. A value of 0.95 means it will ignore the tail 5% of tokens.
+  /// Lower values reduce "hallucinations" and increase consistency.
   final double? topP;
 
   /// Penalizes new tokens based on whether they appear in the text so far.
-  /// Defaults to null.
+  /// Increases the likelihood of the model talking about new topics.
   final double? presencePenalty;
 
   /// A list of string sequences that will cause the generation to stop early.
+  /// Common values: `["<|im_end|>", "\nUser:"]`.
   final List<String> stopSequences;
 
+  /// A JSON string containing additional options passed to the MLX backend.
+  ///
+  /// Supported keys:
+  /// - `top_k` (int): Limit sampling to top K tokens.
+  /// - `repetition_penalty` (double): Penalize repeated tokens.
+  /// - `chat_template_kwargs` (Map): Model-specific tokenizer options.
+  ///   - `enable_thinking` (bool): Toggle reasoning for models like Qwen3.5.
   final String? extraBody;
 
   const GenerateConfig({
@@ -61,11 +71,15 @@ class GenerateConfig {
         map.addAll(extra);
       } catch (e) {
         // Fallback or warning if JSON is invalid
-        print("[MlxLocalllm] Warning: failed to parse extraBody JSON: $e");
+        if (kDebugMode) {
+          print("[MlxLocalllm] Warning: failed to parse extraBody JSON: $e");
+        }
       }
     }
 
-    print("[MlxLocalllm] Final config map: $map");
+    if (kDebugMode) {
+      print("[MlxLocalllm] Final config map: $map");
+    }
     return map;
   }
 }

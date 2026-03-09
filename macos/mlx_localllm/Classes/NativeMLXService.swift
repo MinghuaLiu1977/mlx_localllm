@@ -160,7 +160,9 @@ public actor NativeMLXService {
                 }
             }
         } catch {
+            #if DEBUG
             print("Error scanning for models: \(error)")
+            #endif
         }
         
         return models
@@ -393,7 +395,9 @@ public actor NativeMLXService {
         
         let chatTemplateKwargs = convertToSafeContext(rawKwargs)
         
+        #if DEBUG
         NSLog("[MLX] Chat template kwargs: \(String(describing: chatTemplateKwargs))")
+        #endif
         let input = UserInput(prompt: lmPrompt, additionalContext: chatTemplateKwargs)
         
         // 获取编码后的输入
@@ -425,7 +429,9 @@ public actor NativeMLXService {
                 if logBuffer.contains("\n") {
                     let lines = logBuffer.components(separatedBy: "\n")
                     for line in lines.dropLast() {
+                        #if DEBUG
                         NSLog("[MLX] %@", line as NSString)
+                        #endif
                     }
                     logBuffer = lines.last ?? ""
                 }
@@ -436,7 +442,9 @@ public actor NativeMLXService {
                 if shouldStop { break }
             }
         }
+        #if DEBUG
         if !logBuffer.isEmpty { NSLog("[MLX] %@", logBuffer as NSString) }
+        #endif
         
         return fullText.trimmingCharacters(in: .whitespacesAndNewlines)
         #endif
@@ -452,7 +460,9 @@ public actor NativeMLXService {
         
         let lmPrompt = prompt.isEmpty ? " " : prompt
         let chatTemplateKwargs = extraOptions?["chat_template_kwargs"] as? [String: Any]
+        #if DEBUG
         NSLog("[MLX] Chat template kwargs: \(String(describing: chatTemplateKwargs))")
+        #endif
         let input = UserInput(prompt: lmPrompt, additionalContext: chatTemplateKwargs)
         let lmInput = try await container.prepare(input: input)
         
@@ -484,11 +494,15 @@ public actor NativeMLXService {
                     let lines = logBuffer.components(separatedBy: "\n")
                     if lines.count > 1 {
                         for line in lines.dropLast() {
+                            #if DEBUG
                             NSLog("[MLX] %@", line as NSString)
+                            #endif
                         }
                         logBuffer = lines.last ?? ""
                     } else {
+                        #if DEBUG
                         NSLog("[MLX] %@", logBuffer as NSString)
+                        #endif
                         logBuffer = ""
                     }
                 }
@@ -499,9 +513,11 @@ public actor NativeMLXService {
                 if shouldStop { break }
             }
         }
+        #if DEBUG
         if !logBuffer.isEmpty {
             NSLog("[MLX] %@", logBuffer as NSString)
         }
+        #endif
         #endif
     }
 }

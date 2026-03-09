@@ -242,8 +242,10 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
                         extraJSON = jsonString
                     }
                     
+                    #if DEBUG
                     NSLog("[MLX] Generate Prompt: %@", prompt as NSString)
                     NSLog("[MLX] Config: temperature=%f, max_tokens=%d, extra_body=%@", Float(temperature), Int32(maxTokens), extraJSON as NSString)
+                    #endif
                     
                     var response: String?
                     #if os(macOS)
@@ -301,8 +303,10 @@ public class MlxLocalllmPlugin: NSObject, FlutterPlugin {
                         extraJSON = jsonString
                     }
                     
+                    #if DEBUG
                     NSLog("[MLX] GenerateStream Prompt: %@", prompt as NSString)
                     NSLog("[MLX] Config: temperature=%f, max_tokens=%d, extra_body=%@", Float(temperature), Int32(maxTokens), extraJSON as NSString)
+                    #endif
 
                     #if os(macOS)
                     if #available(macOS 14.0, *) {
